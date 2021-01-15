@@ -16,7 +16,13 @@
                 <textarea id="value" rows="3"></textarea>
             </div>
 
-            <button class="btn primary">Добавить</button>
+            <app-button
+                :modifier="primary"
+                :isDisable="false"
+                @action="addSection"
+            >
+                Добавить
+            </app-button>
         </form>
 
         <div class="card card-w70">
@@ -45,30 +51,39 @@
             <h3>Добавьте первый блок, чтобы увидеть результат</h3>
         </div>
     </div>
-    <div class="container">
-        <p>
-            <button class="btn primary">Загрузить комментарии</button>
-        </p>
-        <div class="card">
-            <h2>Комментарии</h2>
-            <ul class="list">
-                <li class="list-item">
-                    <div>
-                        <p><strong>test@microsoft.com</strong></p>
-                        <small
-                            >Lorem ipsum dolor sit amet, consectetur adipisicing
-                            elit. Eligendi, reiciendis.</small
-                        >
-                    </div>
-                </li>
-            </ul>
-        </div>
-        <div class="loader"></div>
-    </div>
+    <comments-list></comments-list>
 </template>
 
 <script>
-export default {};
+    import { PRIMARY, DANGER, WARNING } from './helpers/constants';
+    import CommentsList from './components/comments/CommentsList';
+    import AppButton from './components/UI/AppButton';
+
+    export default {
+        data() {
+            return {
+                primary: PRIMARY,
+                danger: DANGER,
+                warning: WARNING,
+            };
+        },
+        methods: {
+            addSection() {
+                console.log(this);
+            }
+        },
+        provide() {
+            return {
+                primary: this.primary,
+                danger: this.danger,
+                warning: this.warning,
+            };
+        },
+        components: {
+            AppButton,
+            CommentsList,
+        }
+    };
 </script>
 
 <style>

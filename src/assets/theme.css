@@ -223,6 +223,11 @@ h3 {
     align-items: center;
 }
 
+.center-content {
+    display: flex;
+    justify-content: center;
+}
+
 .list {
     margin: 0;
     padding: 0;
