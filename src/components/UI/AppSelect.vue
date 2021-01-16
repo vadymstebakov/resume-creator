@@ -61,7 +61,7 @@ export default {
                     }
 
                     switch(isValidData) {
-                        case typeof item.value !== 'string':
+                        case typeof item.value !== 'string' || item.value.length === 0:
                         case typeof item.text !== 'string' || item.text.length === 0:
                         case typeof item.id !== 'number':
                         case typeof item.defaultOption !== 'boolean':

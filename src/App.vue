@@ -31,19 +31,26 @@
             </app-button>
         </form>
         <div class="card card-w70 card-min-h-250">
-            <h3>Добавьте первый блок, чтобы увидеть результат</h3>
+            <h3 v-if="!isCreatedBlocks">Добавьте первый блок, чтобы увидеть результат</h3>
+            <template v-else>
+                <component v-for="block in blocks" :key="block.id" :is="`block-${block.type}`" v-bind="blockProps"></component>
+            </template>
         </div>
     </div>
     <comments-list :primary="primary" :danger="danger"></comments-list>
 </template>
 
 <script>
-import { PRIMARY, DANGER, WARNING, AVATAR_SIZE } from './helpers/constants';
+import { PRIMARY, DANGER, WARNING, AVATAR_SIZE, AVATAR, TITLE, SUBTITLE, TEXT } from './helpers/constants';
 import AppButton from './components/UI/AppButton';
 import AppTextarea from './components/UI/AppTextarea';
 import AppInputTypeFile from './components/UI/AppInputTypeFile';
 import AppSelect from './components/UI/AppSelect';
 import CommentsList from './components/comments/CommentsList';
+import BlockTitle from './components/blocks/BlockTitle';
+import BlockAvatar from './components/blocks/BlockAvatar';
+import BlockSubtitle from './components/blocks/BlockSubtitle';
+import BlockText from './components/blocks/BlockText';
 
 export default {
     data() {
@@ -56,39 +63,35 @@ export default {
             },
             value: '',
             inputAvatar: null,
-            selectedBlockType: 'title',
+            isCreateBlock: false,
+            selectedBlockType: TITLE,
             selectOptions: [
                 {
-                    value: 'title',
+                    value: TITLE,
                     text: 'Заголовок',
                     defaultOption: false,
                     id: 1,
                 },
                 {
-                    value: 'subtitle',
+                    value: SUBTITLE,
                     text: 'Подзаголовок',
                     defaultOption: false,
                     id: 2,
                 },
                 {
-                    value: 'avatar',
+                    value: AVATAR,
                     text: 'Аватар',
                     defaultOption: false,
                     id: 3,
                 },
                 {
-                    value: 'text',
+                    value: TEXT,
                     text: 'Текст',
                     defaultOption: false,
                     id: 4,
                 },
             ],
-            createdBlocks: {
-                title: [],
-                subtitle: [],
-                avatar: [],
-                text: [],
-            },
+            blocks: [],
         };
     },
     methods: {
@@ -101,10 +104,16 @@ export default {
             this.value = '';
         },
         addBlock() {
-            this.createdBlocks[this.selectedBlockType].push(this.value);
+            this.blocks.push({
+                type: this.selectedBlockType,
+                value: this.value,
+                id: `_${Date.now()}`,
+            });
 
             this.resetForm();
-            this.selectedBlockType = 'title';
+            this.selectedBlockType = TITLE;
+            this.isCreateBlock = true;
+            console.log(this.blocks);
         },
         uploadImage(e) {
             const input = e.target;
@@ -127,21 +136,47 @@ export default {
                 console.error('Reader was not load...');
             };
             reader.readAsDataURL(file);
-        }
+        },
     },
     computed: {
         isDisable() {
             return this.value.length < 3 && !this.isSelectAvatar || this.value.length === 0 && this.isSelectAvatar;
         },
         isSelectAvatar() {
-            return this.selectedBlockType === 'avatar';
-        }
+            return this.selectedBlockType === AVATAR;
+        },
+        isCreatedBlocks() {
+            return this.blocks.length > 0;
+        },
+        blockProps() {
+            return this.blocks.reduce((acc, item) => {
+                console.log(item);
+                switch(item.type) {
+                    case TITLE:
+                        acc.title = item.value;
+                        break;
+                    case SUBTITLE:
+                        acc.subtitle = item.value;
+                        break;
+                    case TEXT:
+                        acc.text = item.value;
+                        break;
+                    case AVATAR:
+                        acc.avatar = item.value;
+                        break;
+                    default:
+                        break;
+                }
+
+                return acc;
+            }, {});
+        },
     },
     watch: {
         selectedBlockType() {
             this.resetForm();
             this.errors.file = '';
-        }
+        },
     },
     components: {
         AppButton,
@@ -149,6 +184,10 @@ export default {
         AppInputTypeFile,
         AppSelect,
         CommentsList,
-    }
+        BlockTitle,
+        BlockAvatar,
+        BlockSubtitle,
+        BlockText,
+    },
 };
 </script>
