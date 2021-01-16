@@ -3,3 +3,4 @@ export const DANGER = 'danger';
 export const WARNING = 'warning';
 export const COMMENTS_URL =
     'https://jsonplaceholder.typicode.com/comments?_limit=42';
+export const AVATAR_SIZE = 1000000;

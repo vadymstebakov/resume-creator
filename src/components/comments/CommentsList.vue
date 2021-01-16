@@ -29,71 +29,72 @@
                 </app-button>
             </div>
         </div>
-        <loader v-else-if="loading"></loader>
+        <app-loader v-else-if="loading"></app-loader>
     </div>
 </template>
+
 <script>
-    import axios from 'axios';
-    import { COMMENTS_URL } from './../../helpers/constants';
-    import AppButton from './..//UI/AppButton';
-    import Loader from './../UI/Loader';
-    import CommentsListItem from './CommentsListItem'
+import axios from 'axios';
+import { COMMENTS_URL } from './../../helpers/constants';
+import AppButton from './../UI/AppButton';
+import AppLoader from './../UI/AppLoader';
+import CommentsListItem from './CommentsListItem'
 
-    export default {
-        data() {
-            return {
-                allComments: [],
-                comments: [],
-                commentsLength: 0,
-                visibleCount: 5,
-                visibleCommentsAmount: 5,
-                loading: false,
-            };
-        },
-        methods: {
-            async loadComments() {
-                try {
-                    this.loading = true;
-                    const { data } = await axios.get(COMMENTS_URL);
-                    this.allComments = data;
-                    this.commentsLength = data.length;
-                    this.comments = this.allComments.slice(0, this.visibleCommentsAmount);
-                    this.loading = false;
-                } catch(error) {
-                    this.loading = false;
-                    console.error(error.message);
-                }
-            },
-            loadMoreComments() {
-                this.visibleCommentsAmount = this.visibleCommentsAmount + this.visibleCount;
+export default {
+    props: {
+        primary: String,
+        danger: String,
+    },
+    data() {
+        return {
+            allComments: [],
+            comments: [],
+            commentsLength: 0,
+            visibleCount: 5,
+            visibleCommentsAmount: 5,
+            loading: false,
+        };
+    },
+    methods: {
+        async loadComments() {
+            try {
+                this.loading = true;
+                const { data } = await axios.get(COMMENTS_URL);
+                this.allComments = data;
+                this.commentsLength = data.length;
                 this.comments = this.allComments.slice(0, this.visibleCommentsAmount);
+                this.loading = false;
+            } catch(error) {
+                this.loading = false;
+                console.error(error.message);
+            }
+        },
+        loadMoreComments() {
+            this.visibleCommentsAmount = this.visibleCommentsAmount + this.visibleCount;
+            this.comments = this.allComments.slice(0, this.visibleCommentsAmount);
 
-                if (this.wasLoadAllComments) {
-                    this.allComments = [];
-                }
-            },
-            closeComments() {
-                this.comments = [];
-                this.commentsLength = 0;
-                this.visibleCommentsAmount = 5;
+            if (this.wasLoadAllComments) {
+                this.allComments = [];
             }
         },
-        computed: {
-            checkComments() {
-                return this.comments.length !== 0;
-            },
-            wasLoadAllComments() {
-                return this.commentsLength === this.comments.length;
-            }
+        closeComments() {
+            this.comments = [];
+            this.commentsLength = 0;
+            this.visibleCommentsAmount = 5;
+        }
+    },
+    computed: {
+        checkComments() {
+            return this.comments.length !== 0;
         },
-        inject: ['primary', 'danger', 'warning'],
-        components: {
-            AppButton,
-            Loader,
-            CommentsListItem,
-        },
-    };
+        wasLoadAllComments() {
+            return this.commentsLength === this.comments.length;
+        }
+    },
+    components: {
+        AppButton,
+        AppLoader,
+        CommentsListItem,
+    },
+};
 </script>
-<style scoped>
-
-</style>

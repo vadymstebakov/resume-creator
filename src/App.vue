@@ -1,100 +1,154 @@
 <template>
     <div class="container column">
-        <form class="card card-w30">
+        <form class="card card-w30 card-min-h-250">
+            <app-select
+                labelValue="Тип блока"
+                id="type"
+                :options="selectOptions"
+                v-model:selectVal="selectedBlockType"
+            ></app-select>
             <div class="form-control">
-                <label for="type">Тип блока</label>
-                <select id="type">
-                    <option value="title">Заголовок</option>
-                    <option value="subtitle">Подзаголовок</option>
-                    <option value="avatar">Аватар</option>
-                    <option value="text">Текст</option>
-                </select>
+                <app-textarea
+                    v-if="!isSelectAvatar"
+                    labelValue="Значение"
+                    for="value"
+                    id="value"
+                    v-model:textareaVal.trim="value"
+                ></app-textarea>
+                <app-input-type-file
+                    v-else
+                    accept=".jpg, .jpeg, .png"
+                    :fileError="errors.file"
+                    @action="uploadImage"
+                ></app-input-type-file>
             </div>
-
-            <div class="form-control">
-                <label for="value">Значение</label>
-                <textarea id="value" rows="3"></textarea>
-            </div>
-
             <app-button
                 :modifier="primary"
-                :isDisable="false"
-                @action="addSection"
+                :isDisable="isDisable"
+                @action="addBlock"
             >
                 Добавить
             </app-button>
         </form>
-
-        <div class="card card-w70">
-            <h1>Резюме Nickname</h1>
-            <div class="avatar">
-                <img
-                    src="https://cdn.dribbble.com/users/5592443/screenshots/14279501/drbl_pop_r_m_rick_4x.png"
-                />
-            </div>
-            <h2>Опыт работы</h2>
-            <p>
-                главный герой американского мультсериала «Рик и Морти»,
-                гениальный учёный, изобретатель, атеист (хотя в некоторых сериях
-                он даже молится Богу, однако, каждый раз после чудесного
-                спасения ссылается на удачу и вновь отвергает его
-                существование), алкоголик, социопат, дедушка Морти. На момент
-                начала третьего сезона ему 70 лет[1]. Рик боится пиратов, а его
-                главной слабостью является некий - "Санчезиум". Исходя из того,
-                что существует неограниченное количество вселенных, существует
-                неограниченное количество Риков, герой сериала предположительно
-                принадлежит к измерению С-137. В серии комикcов Рик относится к
-                измерению C-132, а в игре «Pocket Mortys» — к измерению
-                C-123[2]. Прототипом Рика Санчеза является Эмметт Браун, герой
-                кинотрилогии «Назад в будущее»[3].
-            </p>
+        <div class="card card-w70 card-min-h-250">
             <h3>Добавьте первый блок, чтобы увидеть результат</h3>
         </div>
     </div>
-    <comments-list></comments-list>
+    <comments-list :primary="primary" :danger="danger"></comments-list>
 </template>
 
 <script>
-    import { PRIMARY, DANGER, WARNING } from './helpers/constants';
-    import CommentsList from './components/comments/CommentsList';
-    import AppButton from './components/UI/AppButton';
+import { PRIMARY, DANGER, WARNING, AVATAR_SIZE } from './helpers/constants';
+import AppButton from './components/UI/AppButton';
+import AppTextarea from './components/UI/AppTextarea';
+import AppInputTypeFile from './components/UI/AppInputTypeFile';
+import AppSelect from './components/UI/AppSelect';
+import CommentsList from './components/comments/CommentsList';
 
-    export default {
-        data() {
-            return {
-                primary: PRIMARY,
-                danger: DANGER,
-                warning: WARNING,
-            };
-        },
-        methods: {
-            addSection() {
-                console.log(this);
+export default {
+    data() {
+        return {
+            primary: PRIMARY,
+            danger: DANGER,
+            warning: WARNING,
+            errors: {
+                file: '',
+            },
+            value: '',
+            inputAvatar: null,
+            selectedBlockType: 'title',
+            selectOptions: [
+                {
+                    value: 'title',
+                    text: 'Заголовок',
+                    defaultOption: false,
+                    id: 1,
+                },
+                {
+                    value: 'subtitle',
+                    text: 'Подзаголовок',
+                    defaultOption: false,
+                    id: 2,
+                },
+                {
+                    value: 'avatar',
+                    text: 'Аватар',
+                    defaultOption: false,
+                    id: 3,
+                },
+                {
+                    value: 'text',
+                    text: 'Текст',
+                    defaultOption: false,
+                    id: 4,
+                },
+            ],
+            createdBlocks: {
+                title: [],
+                subtitle: [],
+                avatar: [],
+                text: [],
+            },
+        };
+    },
+    methods: {
+        resetForm() {
+            if (this.inputAvatar) {
+                this.inputAvatar.value = '';
+                this.inputAvatar = null;
             }
+
+            this.value = '';
         },
-        provide() {
-            return {
-                primary: this.primary,
-                danger: this.danger,
-                warning: this.warning,
+        addBlock() {
+            this.createdBlocks[this.selectedBlockType].push(this.value);
+
+            this.resetForm();
+            this.selectedBlockType = 'title';
+        },
+        uploadImage(e) {
+            const input = e.target;
+            const file = input.files[0];
+            this.errors.file = '';
+
+            if (file.size > AVATAR_SIZE) {
+                this.errors.file = 'Размер фото не должен превышать 1Mb';
+                this.value = input.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onloadend = () => {
+                this.value = reader.result;
+                this.inputAvatar = input;
             };
-        },
-        components: {
-            AppButton,
-            CommentsList,
+            reader.onerror = () => {
+                console.error('Reader was not load...');
+            };
+            reader.readAsDataURL(file);
         }
-    };
+    },
+    computed: {
+        isDisable() {
+            return this.value.length < 3 && !this.isSelectAvatar || this.value.length === 0 && this.isSelectAvatar;
+        },
+        isSelectAvatar() {
+            return this.selectedBlockType === 'avatar';
+        }
+    },
+    watch: {
+        selectedBlockType() {
+            this.resetForm();
+            this.errors.file = '';
+        }
+    },
+    components: {
+        AppButton,
+        AppTextarea,
+        AppInputTypeFile,
+        AppSelect,
+        CommentsList,
+    }
+};
 </script>
-
-<style>
-.avatar {
-    display: flex;
-    justify-content: center;
-}
-
-.avatar img {
-    width: 150px;
-    height: auto;
-    border-radius: 50%;
-}
-</style>

@@ -213,6 +213,10 @@ h3 {
     width: 70%;
 }
 
+.card-min-h-250 {
+    min-height: 250px;
+}
+
 .card.marked {
     border: 4px solid #42b983;
 }
@@ -362,4 +366,16 @@ h3 {
         -webkit-transform: rotate(360deg);
         transform: rotate(360deg);
     }
+}
+
+.avatar {
+    display: flex;
+    justify-content: center;
+}
+
+.avatar img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
 }

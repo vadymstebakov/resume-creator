@@ -8,28 +8,26 @@
         <slot />
     </button>
 </template>
+
 <script>
-    import { PRIMARY, DANGER, WARNING } from './../../helpers/constants';
+import { PRIMARY, DANGER, WARNING } from './../../helpers/constants';
 
-    export default {
-        props: {
-            modifier: {
-                type: String,
-                default: '',
-                validator(val) {
-                    return ['', PRIMARY, DANGER, WARNING].includes(val);
-                }
-            },
-            isDisable: {
-                type: Boolean,
-                default: false,
-            },
+export default {
+    props: {
+        modifier: {
+            type: String,
+            default: '',
+            validator(val) {
+                return ['', PRIMARY, DANGER, WARNING].includes(val);
+            }
         },
-        emits: {
-            action: null
+        isDisable: {
+            type: Boolean,
+            default: false,
         },
-    }
+    },
+    emits: {
+        action: null
+    },
+}
 </script>
-<style scoped>
-
-</style>
