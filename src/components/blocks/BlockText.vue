@@ -1,11 +1,11 @@
 <template>
-    <p>{{ text }}</p>
+    <p>{{ value }}</p>
 </template>
 
 <script>
 export default {
     props: {
-        text: {
+        value: {
             type: String,
             required: true,
         },

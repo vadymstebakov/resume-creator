@@ -1,11 +1,11 @@
 <template>
-    <h2>{{ subtitle }}</h2>
+    <h2>{{ value }}</h2>
 </template>
 
 <script>
 export default {
     props: {
-        subtitle: {
+        value: {
             type: String,
             required: true,
         },

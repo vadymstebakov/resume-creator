@@ -121,6 +121,14 @@ h3 {
     border-color: #c25205;
 }
 
+.success {
+    color: #42b983;
+}
+
+.error {
+    color: #e53935;
+}
+
 .container {
     margin: 0 auto;
     max-width: 1000px;
@@ -202,6 +210,7 @@ h3 {
     border-radius: 10px;
     box-shadow: 2px 3px 10px rgba(0, 0, 0, 0.2);
     background: #fff;
+    overflow-x: auto;
 }
 
 .card.card-w30 {
@@ -209,7 +218,8 @@ h3 {
     margin-right: 1rem;
 }
 
-.card.card-w70 {
+.card.card-w70,
+.w-70 {
     width: 70%;
 }
 

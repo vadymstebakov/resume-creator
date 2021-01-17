@@ -1,7 +1,7 @@
 <template>
     <div class="avatar">
         <img
-            :src="avatar"
+            :src="value"
             alt=""
         />
     </div>
@@ -10,7 +10,7 @@
 <script>
 export default {
     props: {
-        avatar: {
+        value: {
             type: String,
             required: true,
         },
